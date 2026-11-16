@@ -1,0 +1,23 @@
+<!doctype html><html><body style="margin:0;background:#222"><canvas id="c"></canvas>
+<script type="module">
+import * as THREE from './js/vendor/three.module.js';
+import { loadAssets, A } from './js/assets.js';
+import { buildCharacter, poseCharacter, buildViewModel, VM_OFFSET } from './js/models.js';
+const r = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true }); r.setSize(1280, 720); r.toneMapping = THREE.ACESFilmicToneMapping; r.shadowMap.enabled = true;
+await loadAssets(r);
+const sc = new THREE.Scene(); sc.environment = A.env; sc.background = new THREE.Color(0x30343a);
+const dl = new THREE.DirectionalLight(0xffffff, 2); dl.position.set(3, 5, 4); sc.add(dl); sc.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.6));
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.MeshStandardMaterial({ color: 0x555555 })); floor.rotation.x = -Math.PI / 2; sc.add(floor);
+const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.05, 100);
+window.setup = (cfg) => {
+  for (const c of [...sc.children]) if (c.userData.ch) sc.remove(c);
+  cfg.chars.forEach((ch, i) => { const m = buildCharacter(ch.team); m.userData.ch = 1; m.position.set(ch.x, 0, ch.z || 0); m.rotation.y = ch.rot || 0; sc.add(m);
+    if (!ch.bind) for (let k = 0; k < 30; k++) poseCharacter(m, 1 / 30, { speed: ch.speed || 0, crouch: ch.crouch || 0, downed: ch.downed, dead: ch.dead, pitch: ch.pitch || 0, helmet: true, armor: true, weapon: ch.weapon || 'ak', sprint: ch.sprint, kneel: ch.kneel, reload: ch.reload, dt: 1 / 30, shotAge: 1 }); });
+  cam.position.set(...cfg.cam); cam.lookAt(...cfg.look); r.render(sc, cam);
+};
+window.vm = (id) => { const s2 = new THREE.Scene(); s2.environment = A.env; s2.background = new THREE.Color(0x30343a); s2.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1)); const d = new THREE.DirectionalLight(0xffffff, 2); d.position.set(1, 2, 1); s2.add(d);
+  const g = buildViewModel(id); const root = new THREE.Group(); s2.add(root); root.add(g); root.position.set(...VM_OFFSET[id === 'ak' || id === 'm4' ? 'rifle' : 'pistol']); for (let i = 0; i < (window.NP || 1); i++) g.userData.pose(0.016, {});
+  const u = g.userData.rig.userData; for (const bn of ['hand_r','hand_l','lowerarm_r','lowerarm_l']) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.01), new THREE.MeshBasicMaterial({ color: bn.endsWith('r') ? 0xff0000 : 0x00ff00 })); m.position.copy(u.B[bn].getWorldPosition(new THREE.Vector3())); s2.add(m); }
+  const c2 = new THREE.PerspectiveCamera(56, 16 / 9, 0.01, 10); r.render(s2, c2); };
+window.ready = true;
+</script></body></html>

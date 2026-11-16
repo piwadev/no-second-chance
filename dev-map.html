@@ -1,0 +1,8 @@
+<!doctype html><html><body><canvas id="c"></canvas><script type="module">
+import * as THREE from './js/vendor/three.module.js';
+import { loadAssets, A } from './js/assets.js';
+const r = new THREE.WebGLRenderer({ canvas: document.getElementById('c') }); r.setSize(320, 180);
+await loadAssets(r); window.stage = 'loaded';
+window.buildMap = async () => { const { WarehouseMap } = await import('./js/map.js'); const sc = new THREE.Scene(); window.M = new WarehouseMap(sc); window.SC = sc; return 'built'; };
+window.renderOnce = () => { const cam = new THREE.PerspectiveCamera(70, 16/9, 0.05, 300); cam.position.set(-20, 1.7, -11); cam.lookAt(-20, 1.4, 0); r.render(window.SC, cam); return JSON.stringify(r.info.memory) + ' calls ' + r.info.render.calls; };
+</script></body></html>

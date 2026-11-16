@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NO SECOND CHANCE</title>
+<link rel="icon" href="css/icon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="view"></canvas>
+
+<!-- ================= HUD ================= -->
+<div id="hud" hidden>
+  <div id="vignette"></div>
+  <div id="flashOverlay"></div>
+  <div id="topCenter">
+    <div class="scbox" id="scLbox"><small id="scLName"></small><b id="scL">0</b><div class="pips" id="pipsL"></div></div>
+    <div class="mid"><div id="roundNo"></div><div id="timer">0:00</div><div id="phase"></div></div>
+    <div class="scbox" id="scRbox"><small id="scRName"></small><b id="scR">0</b><div class="pips" id="pipsR"></div></div>
+  </div>
+  <div id="radarWrap"><canvas id="radar" width="200" height="200"></canvas><div id="area"></div></div>
+  <div id="teamList"></div>
+  <div id="killfeed"></div>
+
+  <div id="crosshair"><i class="t"></i><i class="b"></i><i class="l"></i><i class="r"></i><i class="d"></i></div>
+  <div id="hitmarker"></div>
+  <div id="dmgDirs"></div>
+  <div id="prompt" hidden></div>
+  <div id="progress" hidden><span></span><div><i></i></div></div>
+  <div id="centerMsg"><div id="centerBig"></div><div id="centerSmall"></div></div>
+  <div id="toast"></div>
+  <div id="buyHint" hidden><kbd>B</kbd> BUY MENU · <kbd>Enter</kbd> READY</div>
+
+  <div id="healthPanel">
+    <svg id="body" viewBox="0 0 60 120" aria-label="injuries">
+      <circle id="bd-head" cx="30" cy="12" r="9"/>
+      <rect id="bd-chest" x="19" y="23" width="22" height="38" rx="4"/>
+      <rect id="bd-larm" x="8" y="24" width="9" height="36" rx="4"/>
+      <rect id="bd-rarm" x="43" y="24" width="9" height="36" rx="4"/>
+      <rect id="bd-lleg" x="19" y="63" width="10" height="52" rx="4"/>
+      <rect id="bd-rleg" x="31" y="63" width="10" height="52" rx="4"/>
+    </svg>
+    <div class="hpCol">
+      <div class="hpRow"><b id="hpNum">100</b><span class="lbl">HP</span><span id="cond" class="healthy">HEALTHY</span></div>
+      <div class="hpTrack"><i id="hpBar"></i></div>
+      <div class="armRow"><span id="armorBox">VEST <b id="armorNum">0</b></span><span id="helmetBox">HELMET</span></div>
+      <div id="injText"></div>
+      <div id="bleedWarn" hidden></div>
+    </div>
+  </div>
+
+  <div id="weaponPanel">
+    <div id="slots"></div>
+    <div id="wName"></div>
+    <div class="ammo"><b id="mag">0</b><span id="magCap"></span></div>
+    <div id="mags"></div>
+    <div id="equip"></div>
+    <div id="money">$0</div>
+  </div>
+
+  <div id="downedScreen" hidden>
+    <div class="dsBox"><div class="dsTitle">YOU ARE DOWN</div><div class="dsTimer"><span id="bleedTimer">20.0</span>s</div><div class="dsBar"><i id="bleedBar"></i></div><div id="downedStatus"></div><div class="dsHint">A teammate can drag you (G) and revive you with a medical kit (E). A headshot or more damage finishes you.</div></div>
+  </div>
+  <div id="specLabel" hidden><div id="deathInfo" hidden></div><small>SPECTATING</small><b id="specName"></b><span>LMB / Space — next teammate</span></div>
+  <div id="summary" hidden></div>
+  <div id="scoreboard" hidden></div>
+</div>
+
+<!-- ================= BUY ================= -->
+<div id="buy" hidden>
+  <div class="buyBox">
+    <div class="buyHead"><h2>BUY MENU</h2><span id="buyTimer"></span><b id="buyMoney">$0</b></div>
+    <div id="buyGrid"></div>
+    <div class="buyFoot">Click or press the key to buy · <kbd>B</kbd> / <kbd>Esc</kbd> close · Survivors keep their equipment and partly-used magazines</div>
+  </div>
+</div>
+
+<!-- ================= MENUS ================= -->
+<div id="menu" class="screen">
+  <div class="menuInner">
+    <div class="brandTag">PROTOTYPE 01 · THE WAREHOUSE</div>
+    <h1 class="title">NO SECOND<br><span>CHANCE</span></h1>
+    <p class="tagline">One mistake. One bullet. One chance to survive.</p>
+    <div class="menuBtns" id="mainBtns">
+      <button class="btn primary" id="btnPlay">PLAY</button>
+      <button class="btn" id="btnControls">CONTROLS</button>
+      <button class="btn" id="btnSettings">SETTINGS</button>
+      <button class="btn" id="btnQuit" hidden>QUIT</button>
+    </div>
+    <div class="sidePick" id="sidePick" hidden>
+      <h3>CHOOSE YOUR SIDE</h3>
+      <div class="sides">
+        <button class="side atk" data-side="atk"><b>ATTACKERS</b><small>Push a site, plant the explosive, defend it for 40 seconds.</small></button>
+        <button class="side def" data-side="def"><b>DEFENDERS</b><small>Hold sites A and B, rotate, retake and defuse.</small></button>
+      </div>
+      <div class="diffRow">BOT DIFFICULTY <select id="diffSel"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></div>
+      <button class="btn ghost" id="btnBack">BACK</button>
+    </div>
+    <div class="career" id="career"></div>
+  </div>
+  <div class="menuFoot"><span>5v5 · Operations · Warehouse 01</span><span id="verLabel"></span></div>
+</div>
+
+<div id="pause" class="screen dim" hidden>
+  <div class="panel small">
+    <h2>PAUSED</h2>
+    <button class="btn primary" id="btnResume">RESUME</button>
+    <button class="btn" id="btnPControls">CONTROLS</button>
+    <button class="btn" id="btnPSettings">SETTINGS</button>
+    <button class="btn ghost" id="btnLeave">LEAVE MATCH</button>
+  </div>
+</div>
+
+<div id="controls" class="screen dim" hidden>
+  <div class="panel">
+    <h2>CONTROLS</h2>
+    <div class="ctlGrid">
+      <div><kbd>W A S D</kbd> Move</div><div><kbd>Mouse</kbd> Aim · <kbd>LMB</kbd> Fire</div>
+      <div><kbd>Shift</kbd> Sprint (no shooting)</div><div><kbd>C</kbd> / <kbd>Ctrl</kbd> Crouch</div>
+      <div><kbd>Alt</kbd> Walk (quiet)</div><div><kbd>Space</kbd> Jump</div>
+      <div><kbd>R</kbd> Reload (keeps the partial magazine)</div><div><kbd>1</kbd> Rifle · <kbd>2</kbd> Pistol · <kbd>Q</kbd> Last</div>
+      <div><kbd>3</kbd>/<kbd>4</kbd> Grenades (press again to cycle)</div><div><kbd>LMB</kbd> throw · <kbd>RMB</kbd> lob</div>
+      <div><kbd>E</kbd> hold: plant · defuse · revive (medkit)</div><div><kbd>G</kbd> hold: drag a downed teammate</div>
+      <div><kbd>X</kbd> Bandage (light bleeding)</div><div><kbd>V</kbd> Tourniquet (heavy bleeding)</div>
+      <div><kbd>H</kbd> Use medical kit on yourself</div><div><kbd>F</kbd> Ping / call for help when downed</div>
+      <div><kbd>B</kbd> Buy menu · <kbd>Enter</kbd> ready up</div><div><kbd>Tab</kbd> Scoreboard · <kbd>Esc</kbd> Pause</div>
+    </div>
+    <div class="rules">
+      <h4>HOW IT WORKS</h4>
+      <p><b>Downed, not dead.</b> Lethal damage downs you unless it is a headshot or catastrophic. Downed players crawl, cannot shoot and bleed out in <span id="bleedSecs">20</span>s. Teammates drag you to cover and revive you with a medical kit (6s). Each player can be rescued once per round — after that, there is no second chance.</p>
+      <p><b>Injuries.</b> Arm hits add recoil and sway. Leg hits slow you and disable sprinting. Chest and limb hits can cause bleeding — bandage light bleeding, tourniquet heavy limb bleeding.</p>
+      <p><b>Gunplay.</b> First shots are accurate when you stand still. Moving ruins accuracy; crouching helps. Every rifle has a fixed spray pattern: pull down and against the drift.</p>
+    </div>
+    <button class="btn" data-close="controls">BACK</button>
+  </div>
+</div>
+
+<div id="settings" class="screen dim" hidden>
+  <div class="panel small">
+    <h2>SETTINGS</h2>
+    <label class="set">Mouse sensitivity <input type="range" id="sSens" min="0.2" max="6" step="0.05"><b id="sSensV"></b></label>
+    <label class="set">Field of view <input type="range" id="sFov" min="70" max="110" step="1"><b id="sFovV"></b></label>
+    <label class="set">Volume <input type="range" id="sVol" min="0" max="1" step="0.05"><b id="sVolV"></b></label>
+    <label class="set">Invert mouse Y <input type="checkbox" id="sInv"></label>
+    <label class="set">Graphics quality <select id="sQual"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
+    <p class="note">Match format: first to <b id="sRounds"></b> rounds, sides swap after <b id="sHalf"></b>. (MATCH constants in js/config.js)</p>
+    <button class="btn" data-close="settings">BACK</button>
+  </div>
+</div>
+
+<div id="matchOver" class="screen dim" hidden>
+  <div class="panel wide"><div class="moHead"></div><div class="moStats"></div><div class="moBoard"></div>
+    <div class="moBtns"><button class="btn primary" id="btnAgain">PLAY AGAIN</button><button class="btn" id="btnMenu">MAIN MENU</button></div></div>
+</div>
+<div id="clickToPlay" hidden><div>CLICK TO PLAY</div><small>Mouse is captured for aiming · Esc to pause</small></div>
+<div id="loading">LOADING…</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
