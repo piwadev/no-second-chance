@@ -28,7 +28,7 @@ Environment overrides (testing): `NSC_API`, `NSC_ROAMING`, `NSC_LOCAL`, `NSC_TES
 
 ## Publishing a game update
 ```bash
-scripts/release.sh patch                 # or minor | major | 4.1.0 ; edit CHANGELOG.md first (## v4.0.1 section = release notes)
+scripts/release.sh patch                 # or minor | major | 1.1.0 ; edit CHANGELOG.md first (## v1.0.1 section = release notes)
 scripts/release.sh minor --launcher      # also builds + attaches a new launcher installer
 scripts/release.sh patch --dry-run       # build everything, publish nothing
 ```

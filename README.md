@@ -16,9 +16,9 @@ After that, the launcher checks GitHub Releases each time it starts and updates 
 
 | | |
 |---|---|
-| ![A long](docs/screens/04-a-long.png) | ![firefight](docs/screens/05-firefight.png) |
-| ![reviving a teammate](docs/screens/06-reviving-teammate.png) | ![downed](docs/screens/08-downed.png) |
-| ![menu](docs/screens/01-menu.png) | ![buy menu](docs/screens/03-buy-menu.png) |
+| ![firefight on A long](docs/screens/02-firefight.png) | ![reviving a downed teammate](docs/screens/03-revive.png) |
+| ![bots reviving and dragging teammates](docs/screens/05-rescue.png) | ![buy menu](docs/screens/04-buy.png) |
+| ![main menu](docs/screens/01-menu.png) | |
 
 ## Features
 
