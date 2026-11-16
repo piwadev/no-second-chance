@@ -4,7 +4,7 @@ Small Electron app (installer: NSIS, per-user) that installs, updates and starts
 
 ## How updating works
 1. On start the launcher calls `GET https://api.github.com/repos/piwadev/no-second-chance/releases/latest` (unauthenticated).
-2. The release must contain `manifest.json` (version, game zip name, **sha256**, size, optional launcher entry) and the game zip `nsc-game-<version>.zip` (web files only, ~4 MB).
+2. The release must contain `manifest.json` (version, game zip name, **sha256**, size, optional launcher entry) and the game zip `nsc-game-<version>.zip` (web files and CC0 art, ~15 MB).
 3. If the version is newer than the installed one, the zip is streamed to `%LOCALAPPDATA%\NoSecondChance\downloads`, its sha256 is checked while downloading, it is extracted (zip-slip safe) to `...\game\<version>.tmp`, validated (`index.html`, `version.json` must match), renamed to `...\game\<version>` and `state.json` is switched: `{current, previous}`. Only current + previous are kept (rollback in Settings).
 4. Play opens the game in its own window, served from the installed folder through a private `nsc://` protocol. No web server, no network needed.
 5. Launcher self-update: `manifest.json` carries `launcher: {version, url, sha256}`. If newer than the running launcher, a "New launcher available" button downloads the installer (sha256-verified) and runs it (user data and saves are kept).

@@ -5,7 +5,7 @@
 #
 # What it does:
 #   1. bumps version.json (the game version players see and the launcher compares against)
-#   2. builds release/out/nsc-game-<v>.zip, its .sha256 and manifest.json (game web files only, ~7 MB)
+#   2. builds release/out/nsc-game-<v>.zip, its .sha256 and manifest.json (game web files + art, ~15 MB)
 #   3. with --launcher: builds the Windows installer (launcher/dist) and records it in release/launcher.json,
 #      so every manifest keeps pointing launchers at the newest installer
 #   4. commits "Release vX", tags vX, pushes, and runs `gh release create` with the assets
